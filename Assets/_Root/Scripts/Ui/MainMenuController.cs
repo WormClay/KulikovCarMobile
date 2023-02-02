@@ -2,6 +2,8 @@ using Profile;
 using Tool;
 using UnityEngine;
 using Object = UnityEngine.Object;
+using Services.Ads.UnityAds;
+using Services.IAP;
 
 namespace Ui
 {
@@ -11,12 +13,17 @@ namespace Ui
         private readonly ProfilePlayer _profilePlayer;
         private readonly MainMenuView _view;
 
+        private UnityAdsService _adsService;
+        private IAPService _iapService;
 
-        public MainMenuController(Transform placeForUi, ProfilePlayer profilePlayer)
+        public MainMenuController(Transform placeForUi, ProfilePlayer profilePlayer, UnityAdsService adsService, IAPService iapService)
         {
             _profilePlayer = profilePlayer;
             _view = LoadView(placeForUi);
-            _view.Init(StartGame, ShowSettings);
+            _view.Init(StartGame, ShowSettings, GetRewarded, BuyGoods);
+
+            _adsService = adsService;
+            _iapService = iapService;
         }
 
         private MainMenuView LoadView(Transform placeForUi)
@@ -33,5 +40,23 @@ namespace Ui
 
         private void ShowSettings() =>
             _profilePlayer.CurrentState.Value = GameState.Settings;
+
+        private void GetRewarded() =>
+            _adsService.RewardedPlayer.Play();
+        
+
+        private void BuyGoods()
+        {
+            if (_iapService.IsInitialized) OnIapInitialized();
+            else _iapService.Initialized.AddListener(OnIapInitialized);
+        }
+
+        protected override void OnDispose() 
+        {
+            _iapService.Initialized.RemoveListener(OnIapInitialized);
+        }
+
+        private void OnIapInitialized() => _iapService.Buy("1_test");
+
     }
 }
