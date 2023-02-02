@@ -2,6 +2,9 @@ using Ui;
 using Game;
 using Profile;
 using UnityEngine;
+using Services.Analytics;
+using Services.Ads.UnityAds;
+using Services.IAP;
 
 internal class MainController : BaseController
 {
@@ -12,11 +15,17 @@ internal class MainController : BaseController
     private SettingsMenuController _settingsMenuController;
     private GameController _gameController;
 
+    private AnalyticsManager _analytics;
+    private UnityAdsService _adsService;
+    private IAPService _iapService;
 
-    public MainController(Transform placeForUi, ProfilePlayer profilePlayer)
+    public MainController(Transform placeForUi, ProfilePlayer profilePlayer, AnalyticsManager analytics, UnityAdsService adsService, IAPService iapService)
     {
         _placeForUi = placeForUi;
         _profilePlayer = profilePlayer;
+        _analytics = analytics;
+        _adsService = adsService;
+        _iapService = iapService;
 
         profilePlayer.CurrentState.SubscribeOnChange(OnChangeGameState);
         OnChangeGameState(_profilePlayer.CurrentState.Value);
@@ -39,12 +48,12 @@ internal class MainController : BaseController
             case GameState.Start:
                 _gameController?.Dispose();
                 _settingsMenuController?.Dispose();
-                _mainMenuController = new MainMenuController(_placeForUi, _profilePlayer);
+                _mainMenuController = new MainMenuController(_placeForUi, _profilePlayer, _adsService, _iapService);
                 break;
             case GameState.Game:
                 _mainMenuController?.Dispose();
                 _settingsMenuController?.Dispose();
-                _gameController = new GameController(_profilePlayer);
+                _gameController = new GameController(_profilePlayer, _analytics);
                 break;
             case GameState.Settings:
                 _mainMenuController?.Dispose();
