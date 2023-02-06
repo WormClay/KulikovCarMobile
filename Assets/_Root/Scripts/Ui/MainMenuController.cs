@@ -20,7 +20,7 @@ namespace Ui
         {
             _profilePlayer = profilePlayer;
             _view = LoadView(placeForUi);
-            _view.Init(StartGame, ShowSettings, GetRewarded, BuyGoods);
+            _view.Init(StartGame, ShowSettings, GetRewarded, BuyGoods, OpenShed);
 
             _adsService = adsService;
             _iapService = iapService;
@@ -43,7 +43,10 @@ namespace Ui
 
         private void GetRewarded() =>
             _adsService.RewardedPlayer.Play();
-        
+
+        private void OpenShed() =>
+            _profilePlayer.CurrentState.Value = GameState.Shed;
+
 
         private void BuyGoods()
         {
