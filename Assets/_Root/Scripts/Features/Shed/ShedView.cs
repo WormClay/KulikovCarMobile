@@ -28,6 +28,7 @@ namespace Features.Shed
         {
             _buttonApply.onClick.RemoveAllListeners();
             _buttonBack.onClick.RemoveAllListeners();
+            Destroy(gameObject);
         }
     }
 }

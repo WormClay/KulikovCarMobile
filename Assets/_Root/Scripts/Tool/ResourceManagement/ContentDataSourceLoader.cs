@@ -25,5 +25,11 @@ namespace Tool
             var dataSource = ResourcesLoader.LoadObject<AbilityItemConfigDataSource>(resourcePath);
             return dataSource == null ? Array.Empty<AbilityItemConfig>() : dataSource.AbilityConfigs.ToArray();
         }
+
+        public static EntryPointConfig LoadEntryPointConfigs(ResourcePath resourcePath)
+        {
+            var dataSource = ResourcesLoader.LoadObject<EntryPointConfig>(resourcePath);
+            return dataSource == null ? new EntryPointConfig() : dataSource;
+        }
     }
 }
