@@ -6,6 +6,7 @@ using Services.Analytics;
 using Services.Ads.UnityAds;
 using Services.IAP;
 using Features.Shed;
+using System;
 
 internal class MainController : BaseController
 {
@@ -35,48 +36,35 @@ internal class MainController : BaseController
 
     protected override void OnDispose()
     {
+        DisposeControllers();
+        _profilePlayer.CurrentState.UnSubscribeOnChange(OnChangeGameState);
+    }
+
+    private void OnChangeGameState(GameState state)
+    {
+        DisposeControllers();
+        switch (state)
+        {
+            case GameState.Start:
+                _mainMenuController = new MainMenuController(_placeForUi, _profilePlayer, _adsService, _iapService);
+                break;
+            case GameState.Game:
+                _gameController = new GameController(_placeForUi, _profilePlayer, _analytics);
+                break;
+            case GameState.Settings:
+                _settingsMenuController = new SettingsMenuController(_placeForUi, _profilePlayer);
+                break;
+            case GameState.Shed:
+                _shedController = new ShedController(_placeForUi, _profilePlayer);
+                break;
+        }
+    }
+
+    private void DisposeControllers()
+    {
         _mainMenuController?.Dispose();
         _gameController?.Dispose();
         _settingsMenuController?.Dispose();
         _shedController?.Dispose();
-        _profilePlayer.CurrentState.UnSubscribeOnChange(OnChangeGameState);
-    }
-
-
-    private void OnChangeGameState(GameState state)
-    {
-        switch (state)
-        {
-            case GameState.Start:
-                _gameController?.Dispose();
-                _settingsMenuController?.Dispose();
-                _mainMenuController = new MainMenuController(_placeForUi, _profilePlayer, _adsService, _iapService);
-                _shedController?.Dispose();
-                break;
-            case GameState.Game:
-                _mainMenuController?.Dispose();
-                _settingsMenuController?.Dispose();
-                _gameController = new GameController(_placeForUi, _profilePlayer, _analytics);
-                _shedController?.Dispose();
-                break;
-            case GameState.Settings:
-                _mainMenuController?.Dispose();
-                _gameController?.Dispose();
-                _settingsMenuController = new SettingsMenuController(_placeForUi, _profilePlayer);
-                _shedController?.Dispose();
-                break;
-            case GameState.Shed:
-                _shedController = new ShedController(_placeForUi, _profilePlayer);
-                _mainMenuController?.Dispose();
-                _settingsMenuController?.Dispose();
-                _gameController?.Dispose();
-                break;
-            default:
-                _mainMenuController?.Dispose();
-                _gameController?.Dispose();
-                _settingsMenuController?.Dispose();
-                _shedController?.Dispose();
-                break;
-        }
     }
 }
