@@ -1,6 +1,7 @@
 using Tool;
 using Game.Car;
 using Features.Inventory;
+using Features.AbilitySystem.Abilities;
 
 namespace Profile
 {
@@ -11,9 +12,9 @@ namespace Profile
         public readonly InventoryModel Inventory;
 
 
-        public ProfilePlayer(float speedCar, float jumpHeight, GameState initialState) : this(speedCar, jumpHeight)
+        public ProfilePlayer(EntryPointConfig entryPointConfig) : this(entryPointConfig.SpeedCar, entryPointConfig.JumpHeight)
         {
-            CurrentState.Value = initialState;
+            CurrentState.Value = entryPointConfig.InitialState;
         }
 
         public ProfilePlayer(float speedCar, float jumpHeight)
