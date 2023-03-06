@@ -23,7 +23,7 @@ internal class EntryPoint : MonoBehaviour
         var profilePlayer = new ProfilePlayer(entryPointConfig);
         _mainController = new MainController(_placeForUi, profilePlayer, _analytics, _adsService, _iapService);
 
-        _analytics.SendMainMenuOpened();
+        //_analytics.SendMainMenuOpened();
 
         if (_adsService.IsInitialized) OnAdsInitialized();
         else _adsService.Initialized.AddListener(OnAdsInitialized);

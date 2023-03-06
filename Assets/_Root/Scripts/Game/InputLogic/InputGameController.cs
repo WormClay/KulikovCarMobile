@@ -6,7 +6,7 @@ namespace Game.InputLogic
 {
     internal class InputGameController : BaseController
     {
-        private readonly ResourcePath _resourcePath = new ResourcePath("Prefabs/KeyboardControl");
+        private readonly ResourcePath _resourcePath = new ResourcePath("Prefabs/Input/KeyboardControl");
         private readonly BaseInputView _view;
 
 
