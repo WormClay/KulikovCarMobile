@@ -1,31 +1,32 @@
 using Profile;
 using Tool;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
-namespace Ui
+namespace Features.Fight
 {
-    internal class SettingsMenuController : BaseController
+    internal class BackController : BaseController
     {
-        private readonly ResourcePath _resourcePath = new ResourcePath("Prefabs/Ui/SettingsMenu");
+        private readonly ResourcePath _resourcePath = new ResourcePath("Prefabs/Fight/BackView");
+
+        private readonly BackView _view;
         private readonly ProfilePlayer _profilePlayer;
-        private readonly SettingsMenuView _view;
 
 
-        public SettingsMenuController(Transform placeForUi, ProfilePlayer profilePlayer)
+        public BackController(Transform placeForUi, ProfilePlayer profilePlayer)
         {
             _profilePlayer = profilePlayer;
             _view = LoadView(placeForUi);
             _view.Init(Back);
         }
 
-        private SettingsMenuView LoadView(Transform placeForUi)
+
+        private BackView LoadView(Transform placeForUi)
         {
             GameObject prefab = ResourcesLoader.LoadPrefab(_resourcePath);
             GameObject objectView = Object.Instantiate(prefab, placeForUi, false);
             AddGameObject(objectView);
 
-            return objectView.GetComponent<SettingsMenuView>();
+            return objectView.GetComponent<BackView>();
         }
 
         private void Back() =>

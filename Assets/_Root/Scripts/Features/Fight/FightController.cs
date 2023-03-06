@@ -1,53 +1,31 @@
 using System;
+using Profile;
 using TMPro;
+using Tool;
 using UnityEngine;
-using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
-namespace BattleScripts
+namespace Features.Fight
 {
-    internal class MainWindowMediator : MonoBehaviour
+    internal class FightController : BaseController
     {
-        [Header("Player Stats")]
-        [SerializeField] private TMP_Text _countMoneyText;
-        [SerializeField] private TMP_Text _countHealthText;
-        [SerializeField] private TMP_Text _countPowerText;
-        [SerializeField] private TMP_Text _countCrimeText;
-
-        [Header("Enemy Stats")]
-        [SerializeField] private TMP_Text _countPowerEnemyText;
-
-        [Header("Money Buttons")]
-        [SerializeField] private Button _addMoneyButton;
-        [SerializeField] private Button _minusMoneyButton;
-
-        [Header("Health Buttons")]
-        [SerializeField] private Button _addHealthButton;
-        [SerializeField] private Button _minusHealthButton;
-
-        [Header("Power Buttons")]
-        [SerializeField] private Button _addPowerButton;
-        [SerializeField] private Button _minusPowerButton;
-
-        [Header("CrimeLevel Buttons")]
-        [SerializeField] private Button _addCrimeLevelButton;
-        [SerializeField] private Button _minusCrimeLevelButton;
-
-        [Header("Other Buttons")]
-        [SerializeField] private Button _fightButton;
-        [SerializeField] private Button _peaceButton;
+        private readonly ResourcePath _resourcePath = new ResourcePath("Prefabs/Fight/FightView");
+        private readonly ProfilePlayer _profilePlayer;
+        private readonly FightView _view;
+        private readonly Enemy _enemy;
 
         private PlayerData _money;
         private PlayerData _heath;
         private PlayerData _power;
         private PlayerData _crime;
 
-        private Enemy _enemy;
-
         private readonly int _maxPeaceValue = 3;
 
-
-        private void Start()
+        public FightController(Transform placeForUi, ProfilePlayer profilePlayer)
         {
+            _profilePlayer = profilePlayer;
+            _view = LoadView(placeForUi);
+
             _enemy = new Enemy("Enemy Flappy");
 
             _money = CreatePlayerData(DataType.Money);
@@ -55,19 +33,27 @@ namespace BattleScripts
             _power = CreatePlayerData(DataType.Power);
             _crime = CreatePlayerData(DataType.Crime);
 
-            Subscribe();
+            Subscribe(_view);
         }
 
-        private void OnDestroy()
+        protected override void OnDispose()
         {
             DisposePlayerData(ref _money);
             DisposePlayerData(ref _heath);
             DisposePlayerData(ref _power);
             DisposePlayerData(ref _crime);
 
-            Unsubscribe();
+            Unsubscribe(_view);
         }
 
+        private FightView LoadView(Transform placeForUi)
+        {
+            GameObject prefab = ResourcesLoader.LoadPrefab(_resourcePath);
+            GameObject objectView = Object.Instantiate(prefab);
+            AddGameObject(objectView);
+
+            return objectView.GetComponent<FightView>();
+        }
 
         private PlayerData CreatePlayerData(DataType dataType)
         {
@@ -84,40 +70,40 @@ namespace BattleScripts
         }
 
 
-        private void Subscribe()
+        private void Subscribe(FightView view)
         {
-            _addMoneyButton.onClick.AddListener(IncreaseMoney);
-            _minusMoneyButton.onClick.AddListener(DecreaseMoney);
+            view.AddMoneyButton.onClick.AddListener(IncreaseMoney);
+            view.MinusMoneyButton.onClick.AddListener(DecreaseMoney);
 
-            _addHealthButton.onClick.AddListener(IncreaseHealth);
-            _minusHealthButton.onClick.AddListener(DecreaseHealth);
+            view.AddHealthButton.onClick.AddListener(IncreaseHealth);
+            view.MinusHealthButton.onClick.AddListener(DecreaseHealth);
 
-            _addPowerButton.onClick.AddListener(IncreasePower);
-            _minusPowerButton.onClick.AddListener(DecreasePower);
+            view.AddPowerButton.onClick.AddListener(IncreasePower);
+            view.MinusPowerButton.onClick.AddListener(DecreasePower);
 
-            _addCrimeLevelButton.onClick.AddListener(IncreaseCrime);
-            _minusCrimeLevelButton.onClick.AddListener(DecreaseCrime);
+            view.AddCrimeLevelButton.onClick.AddListener(IncreaseCrime);
+            view.MinusCrimeLevelButton.onClick.AddListener(DecreaseCrime);
 
-            _fightButton.onClick.AddListener(Fight);
-            _peaceButton.onClick.AddListener(Peace);
+            view.FightButton.onClick.AddListener(Fight);
+            view.PeaceButton.onClick.AddListener(Peace);
         }
 
-        private void Unsubscribe()
+        private void Unsubscribe(FightView view)
         {
-            _addMoneyButton.onClick.RemoveAllListeners();
-            _minusMoneyButton.onClick.RemoveAllListeners();
+            view.AddMoneyButton.onClick.RemoveAllListeners();
+            view.MinusMoneyButton.onClick.RemoveAllListeners();
 
-            _addHealthButton.onClick.RemoveAllListeners();
-            _minusHealthButton.onClick.RemoveAllListeners();
+            view.AddHealthButton.onClick.RemoveAllListeners();
+            view.MinusHealthButton.onClick.RemoveAllListeners();
 
-            _addPowerButton.onClick.RemoveAllListeners();
-            _minusPowerButton.onClick.RemoveAllListeners();
+            view.AddPowerButton.onClick.RemoveAllListeners();
+            view.MinusPowerButton.onClick.RemoveAllListeners();
 
-            _addCrimeLevelButton.onClick.RemoveAllListeners();
-            _minusCrimeLevelButton.onClick.RemoveAllListeners();
+            view.AddCrimeLevelButton.onClick.RemoveAllListeners();
+            view.MinusCrimeLevelButton.onClick.RemoveAllListeners();
 
-            _fightButton.onClick.RemoveAllListeners();
-            _peaceButton.onClick.RemoveAllListeners();
+            view.FightButton.onClick.RemoveAllListeners();
+            view.PeaceButton.onClick.RemoveAllListeners();
         }
 
 
@@ -159,20 +145,20 @@ namespace BattleScripts
             textComponent.text = $"Player {dataType:F} {value}";
 
             int enemyPower = _enemy.CalcPower();
-            _countPowerEnemyText.text = $"Enemy Power {enemyPower}";
+            _view.CountPowerEnemyText.text = $"Enemy Power {enemyPower}";
         }
 
         private TMP_Text GetTextComponent(DataType dataType) =>
             dataType switch
             {
-                DataType.Money => _countMoneyText,
-                DataType.Health => _countHealthText,
-                DataType.Power => _countPowerText,
-                DataType.Crime => _countCrimeText,
+                DataType.Money => _view.CountMoneyText,
+                DataType.Health => _view.CountHealthText,
+                DataType.Power => _view.CountPowerText,
+                DataType.Crime => _view.CountCrimeText,
                 _ => throw new ArgumentException($"Wrong {nameof(DataType)}")
             };
 
-        private void CheckPeace() => _peaceButton.gameObject.SetActive(_crime.Value <= _maxPeaceValue);
+        private void CheckPeace() => _view.PeaceButton.gameObject.SetActive(_crime.Value <= _maxPeaceValue);
 
         private void Fight()
         {
@@ -183,6 +169,8 @@ namespace BattleScripts
             string message = isVictory ? "Win" : "Lose";
 
             Debug.Log($"<color={color}>{message}!!!</color>");
+
+            Close();
         }
 
         private void Peace()
@@ -191,7 +179,10 @@ namespace BattleScripts
             string message = "Peace";
 
             Debug.Log($"<color={color}>{message}!!!</color>");
+
+            Close();
         }
 
+        private void Close() => _profilePlayer.CurrentState.Value = GameState.Game;
     }
 }

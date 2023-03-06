@@ -8,6 +8,7 @@ using Services.IAP;
 using Features.Shed;
 using System;
 using Features.ShedSystem;
+using Features.Fight;
 
 internal class MainController : BaseController
 {
@@ -18,6 +19,10 @@ internal class MainController : BaseController
     private SettingsMenuController _settingsMenuController;
     private ShedContext _shedContext;
     private GameController _gameController;
+//    private RewardController _rewardController;
+    private FightController _fightController;
+    private StartFightController _startFightController;
+    private BackController _backController;
 
     private AnalyticsManager _analytics;
     private UnityAdsService _adsService;
@@ -51,12 +56,20 @@ internal class MainController : BaseController
                 break;
             case GameState.Game:
                 _gameController = new GameController(_placeForUi, _profilePlayer, _analytics);
+                _startFightController = new StartFightController(_placeForUi, _profilePlayer);
+                _backController = new BackController(_placeForUi, _profilePlayer);
                 break;
             case GameState.Settings:
                 _settingsMenuController = new SettingsMenuController(_placeForUi, _profilePlayer);
                 break;
             case GameState.Shed:
                 _shedContext = new ShedContext(_placeForUi, _profilePlayer);
+                break;
+//            case GameState.DailyReward:
+//                _rewardController = new RewardController(_placeForUi, _profilePlayer);
+//                break;
+            case GameState.Fight:
+                _fightController = new FightController(_placeForUi, _profilePlayer);
                 break;
         }
     }
@@ -67,5 +80,8 @@ internal class MainController : BaseController
         _gameController?.Dispose();
         _settingsMenuController?.Dispose();
         _shedContext?.Dispose();
+        _startFightController?.Dispose();
+        _fightController?.Dispose();
+        _backController?.Dispose();
     }
 }

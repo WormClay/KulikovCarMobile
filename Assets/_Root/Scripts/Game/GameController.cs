@@ -30,7 +30,7 @@ namespace Game
             _tapeBackgroundController = CreateTapeBackground(_leftMoveDiff, _rightMoveDiff);
             _abilitiesContext = CreateAbilitiesContext(placeForUi, _carController);
 
-            analytics.SendLevelStarted();
+            //analytics.SendLevelStarted();
         }
 
 
